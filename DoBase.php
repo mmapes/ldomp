@@ -81,6 +81,7 @@ class DoBase extends DoRoBase
 				"Referer is " . getenv ("HTTP_REFERER") . '.'
 			);
 		}
+		return $this;
 	}
 	
 	public function getIds()
