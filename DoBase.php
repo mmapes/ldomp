@@ -6,28 +6,29 @@ if (!function_exists('quote_smart'))
 {
 	function quote_smart($value, $conn = null)
 	{
-	   // Stripslashes if we need to
-	   if (get_magic_quotes_gpc()) {
-	       $value = stripslashes($value);
-	   }
+		// Stripslashes if we need to
+		if (get_magic_quotes_gpc()) {
+			$value = stripslashes($value);
+		}
 	
-	   // Quote it if it's not an integer
-	   if (!is_int($value)) {
-	   	$value = "'" . mysql_real_escape_string($value) . "'";
-	   }
+		// Quote it if it's not an integer
+		if (!is_int($value)) {
+			$value = "'" . mysql_real_escape_string($value) . "'";
+		}
 		
 		if ("''" == $value)
 		{
 			$value = 'DEFAULT';
 		}
-	
-	   return $value;
+		return $value;
 	}
 }
 
 // this class is for read/write
 class DoBase extends DoRoBase 
 {
+	protected static $all;
+	
 	// make sure to override these variables in classes extended from this class
 	protected $tableName = "";			// name of the table in the database
 	protected $primaryKeys = array();
@@ -36,6 +37,23 @@ class DoBase extends DoRoBase
 	public function __construct() 
 	{
 		parent::__construct();
+	}
+	
+	public static function getAll()
+	{
+		if (empty(self::$all))
+		{
+			$objects = array();
+			$className = get_called_class(); // Only in PHP 5.3!
+			$search = new $className();
+			$rs = $search->find();
+			for ($i = 0; $i < $rs->rowCount(); $i++)
+			{
+				$objects[] = $rs->getNext(new $className());
+			}
+			self::$all = $objects;
+		}
+		return self::$all;
 	}
 	
 	public function del() 
