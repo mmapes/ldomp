@@ -7,6 +7,8 @@ class DoRoBase extends DbConnector {
 	protected $sql = '';
 	protected $where = '';
 	protected $orderBy = '';
+	protected $limit;
+	protected $offset;
 	
 	public function __construct()
 	{
@@ -47,18 +49,28 @@ class DoRoBase extends DbConnector {
 
 	public function setLimit($num)
 	{
-		$this->limit = $num;
+		$this->limit = (int) $num;
+	}
+	
+	public function setOffset($num)
+	{
+		$this->offset = (int) $num;
 	}
 
 	protected function getLimit()
 	{
 		if (isset($this->limit) && is_numeric($this->limit))
 		{
-			return sprintf(" LIMIT %s ", $this->limit);
+			if (isset($this->offset) && is_numeric($this->offset))
+			{
+				return sprintf(" LIMIT %s, %s ", $this->offset, $this->limit);
+			} else {
+				return sprintf(" LIMIT %s ", $this->limit);
+			}
 		}
 		return "";
 	}
-
+	
 	/**
 	 * Add a subclause to the WHERE clause for a search
 	 * @param whereCondition string <p>
