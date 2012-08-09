@@ -260,7 +260,7 @@ class DoBase extends DoRoBase
 		{
 			if (in_array($property, $this->primaryKeys)) { continue; }
 			if ($bPartialUpdate && !isset($this->$property)) { continue; }
-			$sql .= $separator . $property . "=".quote_smart($this->$property, $conn);
+			$sql .= $separator . '`' . $property . '`' . "=".quote_smart($this->$property, $conn);
 			$separator = ",";
 		}
 		$sql .= $this->getWhereClause($this->primaryKeys);
@@ -268,5 +268,3 @@ class DoBase extends DoRoBase
 		return $success;
 	}
 }
-
-?>
