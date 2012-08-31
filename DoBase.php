@@ -39,21 +39,28 @@ class DoBase extends DoRoBase
 		parent::__construct();
 	}
 	
+	/**
+	 * Returl all records of a given data object.
+	 * @version 3.0.0, there is only one instance of self::$all, and it is 
+	 * shared for every class that shares DOBase as a parent. So we need to 
+	 * differentiate called classes. Made $all a keyed, nested array, rather 
+	 * than a simple array of objects.
+	 */
 	public static function getAll()
 	{
-		if (empty(self::$all))
+		$className = get_called_class(); // Only in PHP 5.3!
+		if (empty(self::$all) && !array_key_exists($className, self::$all) )
 		{
 			$objects = array();
-			$className = get_called_class(); // Only in PHP 5.3!
 			$search = new $className();
 			$rs = $search->find();
 			for ($i = 0; $i < $rs->rowCount(); $i++)
 			{
 				$objects[] = $rs->getNext(new $className());
 			}
-			self::$all = $objects;
+			self::$all[$className] = $objects;
 		}
-		return self::$all;
+		return self::$all[$className];
 	}
 	
 	public function del() 
